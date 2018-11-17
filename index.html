@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Flizzet Studios - Test Ad Game</title>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.7.1/pixi.min.js"></script>
+  
+  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+  
+  <!-- Bump.js -->
+  <script>
+    "use strict";var _createClass=(function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||!1;descriptor.configurable=!0;if("value" in descriptor)descriptor.writable=!0;Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor}})();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function")}}
+    var Bump=(function(){function Bump(){var renderingEngine=arguments.length<=0||arguments[0]===undefined?PIXI:arguments[0];_classCallCheck(this,Bump);if(renderingEngine===undefined)throw new Error("Please assign a rendering engine in the constructor before using bump.js");this.renderer="pixi"}
+    _createClass(Bump,[{key:"addCollisionProperties",value:function addCollisionProperties(sprite){if(this.renderer==="pixi"){if(sprite.gx===undefined){Object.defineProperty(sprite,"gx",{get:function get(){return sprite.getGlobalPosition().x},enumerable:!0,configurable:!0})}
+    if(sprite.gy===undefined){Object.defineProperty(sprite,"gy",{get:function get(){return sprite.getGlobalPosition().y},enumerable:!0,configurable:!0})}
+    if(sprite.centerX===undefined){Object.defineProperty(sprite,"centerX",{get:function get(){return sprite.x+sprite.width/2},enumerable:!0,configurable:!0})}
+    if(sprite.centerY===undefined){Object.defineProperty(sprite,"centerY",{get:function get(){return sprite.y+sprite.height/2},enumerable:!0,configurable:!0})}
+    if(sprite.halfWidth===undefined){Object.defineProperty(sprite,"halfWidth",{get:function get(){return sprite.width/2},enumerable:!0,configurable:!0})}
+    if(sprite.halfHeight===undefined){Object.defineProperty(sprite,"halfHeight",{get:function get(){return sprite.height/2},enumerable:!0,configurable:!0})}
+    if(sprite.xAnchorOffset===undefined){Object.defineProperty(sprite,"xAnchorOffset",{get:function get(){if(sprite.anchor!==undefined){return sprite.width*sprite.anchor.x}else{return 0}},enumerable:!0,configurable:!0})}
+    if(sprite.yAnchorOffset===undefined){Object.defineProperty(sprite,"yAnchorOffset",{get:function get(){if(sprite.anchor!==undefined){return sprite.height*sprite.anchor.y}else{return 0}},enumerable:!0,configurable:!0})}
+    if(sprite.circular&&sprite.radius===undefined){Object.defineProperty(sprite,"radius",{get:function get(){return sprite.width/2},enumerable:!0,configurable:!0})}}
+    sprite._bumpPropertiesAdded=!0}},{key:"hitTestPoint",value:function hitTestPoint(point,sprite){if(!sprite._bumpPropertiesAdded)this.addCollisionProperties(sprite);var shape=undefined,left=undefined,right=undefined,top=undefined,bottom=undefined,vx=undefined,vy=undefined,magnitude=undefined,hit=undefined;if(sprite.radius){shape="circle"}else{shape="rectangle"}
+    if(shape==="rectangle"){left=sprite.x-sprite.xAnchorOffset;right=sprite.x+sprite.width-sprite.xAnchorOffset;top=sprite.y-sprite.yAnchorOffset;bottom=sprite.y+sprite.height-sprite.yAnchorOffset;hit=point.x>left&&point.x<right&&point.y>top&&point.y<bottom}
+    if(shape==="circle"){var _vx=point.x-sprite.x-sprite.width/2+sprite.xAnchorOffset,_vy=point.y-sprite.y-sprite.height/2+sprite.yAnchorOffset,_magnitude=Math.sqrt(_vx*_vx+_vy*_vy);hit=_magnitude<sprite.radius}
+    return hit}},{key:"hitTestCircle",value:function hitTestCircle(c1,c2){var global=arguments.length<=2||arguments[2]===undefined?!1:arguments[2];if(!c1._bumpPropertiesAdded)this.addCollisionProperties(c1);if(!c2._bumpPropertiesAdded)this.addCollisionProperties(c2);var vx=undefined,vy=undefined,magnitude=undefined,combinedRadii=undefined,hit=undefined;if(global){vx=c2.gx+c2.width/2-c2.xAnchorOffset-(c1.gx+c1.width/2-c1.xAnchorOffset);vy=c2.gy+c2.width/2-c2.yAnchorOffset-(c1.gy+c1.width/2-c1.yAnchorOffset)}else{vx=c2.x+c2.width/2-c2.xAnchorOffset-(c1.x+c1.width/2-c1.xAnchorOffset);vy=c2.y+c2.width/2-c2.yAnchorOffset-(c1.y+c1.width/2-c1.yAnchorOffset)}
+    magnitude=Math.sqrt(vx*vx+vy*vy);combinedRadii=c1.radius+c2.radius;hit=magnitude<combinedRadii;return hit}},{key:"circleCollision",value:function circleCollision(c1,c2){var bounce=arguments.length<=2||arguments[2]===undefined?!1:arguments[2];var global=arguments.length<=3||arguments[3]===undefined?!1:arguments[3];if(!c1._bumpPropertiesAdded)this.addCollisionProperties(c1);if(!c2._bumpPropertiesAdded)this.addCollisionProperties(c2);var magnitude=undefined,combinedRadii=undefined,overlap=undefined,vx=undefined,vy=undefined,dx=undefined,dy=undefined,s={},hit=!1;if(global){vx=c2.gx+c2.width/2-c2.xAnchorOffset-(c1.gx+c1.width/2-c1.xAnchorOffset);vy=c2.gy+c2.width/2-c2.yAnchorOffset-(c1.gy+c1.width/2-c1.yAnchorOffset)}else{vx=c2.x+c2.width/2-c2.xAnchorOffset-(c1.x+c1.width/2-c1.xAnchorOffset);vy=c2.y+c2.width/2-c2.yAnchorOffset-(c1.y+c1.width/2-c1.yAnchorOffset)}
+    magnitude=Math.sqrt(vx*vx+vy*vy);combinedRadii=c1.radius+c2.radius;if(magnitude<combinedRadii){hit=!0;overlap=combinedRadii-magnitude;var quantumPadding=0.3;overlap+=quantumPadding;dx=vx/magnitude;dy=vy/magnitude;c1.x-=overlap*dx;c1.y-=overlap*dy;if(bounce){s.x=vy;s.y=-vx;this.bounceOffSurface(c1,s)}}
+    return hit}},{key:"movingCircleCollision",value:function movingCircleCollision(c1,c2){var global=arguments.length<=2||arguments[2]===undefined?!1:arguments[2];if(!c1._bumpPropertiesAdded)this.addCollisionProperties(c1);if(!c2._bumpPropertiesAdded)this.addCollisionProperties(c2);var combinedRadii=undefined,overlap=undefined,xSide=undefined,ySide=undefined,s={},p1A={},p1B={},p2A={},p2B={},hit=!1;c1.mass=c1.mass||1;c2.mass=c2.mass||1;if(global){s.vx=c2.gx+c2.radius-c2.xAnchorOffset-(c1.gx+c1.radius-c1.xAnchorOffset);s.vy=c2.gy+c2.radius-c2.yAnchorOffset-(c1.gy+c1.radius-c1.yAnchorOffset)}else{s.vx=c2.x+c2.radius-c2.xAnchorOffset-(c1.x+c1.radius-c1.xAnchorOffset);s.vy=c2.y+c2.radius-c2.yAnchorOffset-(c1.y+c1.radius-c1.yAnchorOffset)}
+    s.magnitude=Math.sqrt(s.vx*s.vx+s.vy*s.vy);combinedRadii=c1.radius+c2.radius;if(s.magnitude<combinedRadii){hit=!0;overlap=combinedRadii-s.magnitude;overlap+=0.3;s.dx=s.vx/s.magnitude;s.dy=s.vy/s.magnitude;s.vxHalf=Math.abs(s.dx*overlap/2);s.vyHalf=Math.abs(s.dy*overlap/2);c1.x>c2.x?xSide=1:xSide=-1;c1.y>c2.y?ySide=1:ySide=-1;c1.x=c1.x+s.vxHalf*xSide;c1.y=c1.y+s.vyHalf*ySide;c2.x=c2.x+s.vxHalf*-xSide;c2.y=c2.y+s.vyHalf*-ySide;s.lx=s.vy;s.ly=-s.vx;var dp1=c1.vx*s.dx+c1.vy*s.dy;p1A.x=dp1*s.dx;p1A.y=dp1*s.dy;var dp2=c1.vx*(s.lx/s.magnitude)+c1.vy*(s.ly/s.magnitude);p1B.x=dp2*(s.lx/s.magnitude);p1B.y=dp2*(s.ly/s.magnitude);var dp3=c2.vx*s.dx+c2.vy*s.dy;p2A.x=dp3*s.dx;p2A.y=dp3*s.dy;var dp4=c2.vx*(s.lx/s.magnitude)+c2.vy*(s.ly/s.magnitude);p2B.x=dp4*(s.lx/s.magnitude);p2B.y=dp4*(s.ly/s.magnitude);c1.bounce={};c1.bounce.x=p1B.x+p2A.x;c1.bounce.y=p1B.y+p2A.y;c2.bounce={};c2.bounce.x=p1A.x+p2B.x;c2.bounce.y=p1A.y+p2B.y;c1.vx=c1.bounce.x/c1.mass;c1.vy=c1.bounce.y/c1.mass;c2.vx=c2.bounce.x/c2.mass;c2.vy=c2.bounce.y/c2.mass}
+    return hit}},{key:"multipleCircleCollision",value:function multipleCircleCollision(arrayOfCircles){var global=arguments.length<=1||arguments[1]===undefined?!1:arguments[1];for(var i=0;i<arrayOfCircles.length;i++){var c1=arrayOfCircles[i];for(var j=i+1;j<arrayOfCircles.length;j++){var c2=arrayOfCircles[j];this.movingCircleCollision(c1,c2,global)}}}},{key:"rectangleCollision",value:function rectangleCollision(r1,r2){var bounce=arguments.length<=2||arguments[2]===undefined?!1:arguments[2];var global=arguments.length<=3||arguments[3]===undefined?!0:arguments[3];if(!r1._bumpPropertiesAdded)this.addCollisionProperties(r1);if(!r2._bumpPropertiesAdded)this.addCollisionProperties(r2);var collision=undefined,combinedHalfWidths=undefined,combinedHalfHeights=undefined,overlapX=undefined,overlapY=undefined,vx=undefined,vy=undefined;if(global){vx=r1.gx+Math.abs(r1.halfWidth)-r1.xAnchorOffset-(r2.gx+Math.abs(r2.halfWidth)-r2.xAnchorOffset);vy=r1.gy+Math.abs(r1.halfHeight)-r1.yAnchorOffset-(r2.gy+Math.abs(r2.halfHeight)-r2.yAnchorOffset)}else{vx=r1.x+Math.abs(r1.halfWidth)-r1.xAnchorOffset-(r2.x+Math.abs(r2.halfWidth)-r2.xAnchorOffset);vy=r1.y+Math.abs(r1.halfHeight)-r1.yAnchorOffset-(r2.y+Math.abs(r2.halfHeight)-r2.yAnchorOffset)}
+    combinedHalfWidths=Math.abs(r1.halfWidth)+Math.abs(r2.halfWidth);combinedHalfHeights=Math.abs(r1.halfHeight)+Math.abs(r2.halfHeight);if(Math.abs(vx)<combinedHalfWidths){if(Math.abs(vy)<combinedHalfHeights){overlapX=combinedHalfWidths-Math.abs(vx);overlapY=combinedHalfHeights-Math.abs(vy);if(overlapX>=overlapY){if(vy>0){collision="top";r1.y=r1.y+overlapY}else{collision="bottom";r1.y=r1.y-overlapY}
+    if(bounce){r1.vy*=-1}}else{if(vx>0){collision="left";r1.x=r1.x+overlapX}else{collision="right";r1.x=r1.x-overlapX}
+    if(bounce){r1.vx*=-1}}}else{}}else{}
+    return collision}},{key:"hitTestRectangle",value:function hitTestRectangle(r1,r2){var global=arguments.length<=2||arguments[2]===undefined?!1:arguments[2];if(!r1._bumpPropertiesAdded)this.addCollisionProperties(r1);if(!r2._bumpPropertiesAdded)this.addCollisionProperties(r2);var hit=undefined,combinedHalfWidths=undefined,combinedHalfHeights=undefined,vx=undefined,vy=undefined;hit=!1;if(global){vx=r1.gx+Math.abs(r1.halfWidth)-r1.xAnchorOffset-(r2.gx+Math.abs(r2.halfWidth)-r2.xAnchorOffset);vy=r1.gy+Math.abs(r1.halfHeight)-r1.yAnchorOffset-(r2.gy+Math.abs(r2.halfHeight)-r2.yAnchorOffset)}else{vx=r1.x+Math.abs(r1.halfWidth)-r1.xAnchorOffset-(r2.x+Math.abs(r2.halfWidth)-r2.xAnchorOffset);vy=r1.y+Math.abs(r1.halfHeight)-r1.yAnchorOffset-(r2.y+Math.abs(r2.halfHeight)-r2.yAnchorOffset)}
+    combinedHalfWidths=Math.abs(r1.halfWidth)+Math.abs(r2.halfWidth);combinedHalfHeights=Math.abs(r1.halfHeight)+Math.abs(r2.halfHeight);if(Math.abs(vx)<combinedHalfWidths){if(Math.abs(vy)<combinedHalfHeights){hit=!0}else{hit=!1}}else{hit=!1}
+    return hit}},{key:"hitTestCircleRectangle",value:function hitTestCircleRectangle(c1,r1){var global=arguments.length<=2||arguments[2]===undefined?!1:arguments[2];if(!r1._bumpPropertiesAdded)this.addCollisionProperties(r1);if(!c1._bumpPropertiesAdded)this.addCollisionProperties(c1);var region=undefined,collision=undefined,c1x=undefined,c1y=undefined,r1x=undefined,r1y=undefined;if(global){c1x=c1.gx;c1y=c1.gy;r1x=r1.gx;r1y=r1.gy}else{c1x=c1.x;c1y=c1.y;r1x=r1.x;r1y=r1.y}
+    if(c1y-c1.yAnchorOffset<r1y-Math.abs(r1.halfHeight)-r1.yAnchorOffset){if(c1x-c1.xAnchorOffset<r1x-1-Math.abs(r1.halfWidth)-r1.xAnchorOffset){region="topLeft"}else if(c1x-c1.xAnchorOffset>r1x+1+Math.abs(r1.halfWidth)-r1.xAnchorOffset){region="topRight"}else{region="topMiddle"}}
+    else if(c1y-c1.yAnchorOffset>r1y+Math.abs(r1.halfHeight)-r1.yAnchorOffset){if(c1x-c1.xAnchorOffset<r1x-1-Math.abs(r1.halfWidth)-r1.xAnchorOffset){region="bottomLeft"}else if(c1x-c1.xAnchorOffset>r1x+1+Math.abs(r1.halfWidth)-r1.xAnchorOffset){region="bottomRight"}else{region="bottomMiddle"}}
+    else{if(c1x-c1.xAnchorOffset<r1x-Math.abs(r1.halfWidth)-r1.xAnchorOffset){region="leftMiddle"}else{region="rightMiddle"}}
+    if(region==="topMiddle"||region==="bottomMiddle"||region==="leftMiddle"||region==="rightMiddle"){collision=this.hitTestRectangle(c1,r1,global)}
+    else{var point={};switch(region){case "topLeft":point.x=r1x-r1.xAnchorOffset;point.y=r1y-r1.yAnchorOffset;break;case "topRight":point.x=r1x+r1.width-r1.xAnchorOffset;point.y=r1y-r1.yAnchorOffset;break;case "bottomLeft":point.x=r1x-r1.xAnchorOffset;point.y=r1y+r1.height-r1.yAnchorOffset;break;case "bottomRight":point.x=r1x+r1.width-r1.xAnchorOffset;point.y=r1y+r1.height-r1.yAnchorOffset}
+    collision=this.hitTestCirclePoint(c1,point,global)}
+    if(collision){return region}else{return collision}}},{key:"hitTestCirclePoint",value:function hitTestCirclePoint(c1,point){var global=arguments.length<=2||arguments[2]===undefined?!1:arguments[2];if(!c1._bumpPropertiesAdded)this.addCollisionProperties(c1);point.diameter=1;point.width=point.diameter;point.radius=0.5;point.centerX=point.x;point.centerY=point.y;point.gx=point.x;point.gy=point.y;point.xAnchorOffset=0;point.yAnchorOffset=0;point._bumpPropertiesAdded=!0;return this.hitTestCircle(c1,point,global)}},{key:"circleRectangleCollision",value:function circleRectangleCollision(c1,r1){var bounce=arguments.length<=2||arguments[2]===undefined?!1:arguments[2];var global=arguments.length<=3||arguments[3]===undefined?!1:arguments[3];if(!r1._bumpPropertiesAdded)this.addCollisionProperties(r1);if(!c1._bumpPropertiesAdded)this.addCollisionProperties(c1);var region=undefined,collision=undefined,c1x=undefined,c1y=undefined,r1x=undefined,r1y=undefined;if(global){c1x=c1.gx;c1y=c1.gy;r1x=r1.gx;r1y=r1.gy}else{c1x=c1.x;c1y=c1.y;r1x=r1.x;r1y=r1.y}
+    if(c1y-c1.yAnchorOffset<r1y-Math.abs(r1.halfHeight)-r1.yAnchorOffset){if(c1x-c1.xAnchorOffset<r1x-1-Math.abs(r1.halfWidth)-r1.xAnchorOffset){region="topLeft"}else if(c1x-c1.xAnchorOffset>r1x+1+Math.abs(r1.halfWidth)-r1.xAnchorOffset){region="topRight"}else{region="topMiddle"}}
+    else if(c1y-c1.yAnchorOffset>r1y+Math.abs(r1.halfHeight)-r1.yAnchorOffset){if(c1x-c1.xAnchorOffset<r1x-1-Math.abs(r1.halfWidth)-r1.xAnchorOffset){region="bottomLeft"}else if(c1x-c1.xAnchorOffset>r1x+1+Math.abs(r1.halfWidth)-r1.xAnchorOffset){region="bottomRight"}else{region="bottomMiddle"}}
+    else{if(c1x-c1.xAnchorOffset<r1x-Math.abs(r1.halfWidth)-r1.xAnchorOffset){region="leftMiddle"}else{region="rightMiddle"}}
+    if(region==="topMiddle"||region==="bottomMiddle"||region==="leftMiddle"||region==="rightMiddle"){collision=this.rectangleCollision(c1,r1,bounce,global)}
+    else{var point={};switch(region){case "topLeft":point.x=r1x-r1.xAnchorOffset;point.y=r1y-r1.yAnchorOffset;break;case "topRight":point.x=r1x+r1.width-r1.xAnchorOffset;point.y=r1y-r1.yAnchorOffset;break;case "bottomLeft":point.x=r1x-r1.xAnchorOffset;point.y=r1y+r1.height-r1.yAnchorOffset;break;case "bottomRight":point.x=r1x+r1.width-r1.xAnchorOffset;point.y=r1y+r1.height-r1.yAnchorOffset}
+    collision=this.circlePointCollision(c1,point,bounce,global)}
+    if(collision){return region}else{return collision}}},{key:"circlePointCollision",value:function circlePointCollision(c1,point){var bounce=arguments.length<=2||arguments[2]===undefined?!1:arguments[2];var global=arguments.length<=3||arguments[3]===undefined?!1:arguments[3];if(!c1._bumpPropertiesAdded)this.addCollisionProperties(c1);point.diameter=1;point.width=point.diameter;point.radius=0.5;point.centerX=point.x;point.centerY=point.y;point.gx=point.x;point.gy=point.y;point.xAnchorOffset=0;point.yAnchorOffset=0;point._bumpPropertiesAdded=!0;return this.circleCollision(c1,point,bounce,global)}},{key:"bounceOffSurface",value:function bounceOffSurface(o,s){if(!o._bumpPropertiesAdded)this.addCollisionProperties(o);var dp1=undefined,dp2=undefined,p1={},p2={},bounce={},mass=o.mass||1;s.lx=s.y;s.ly=-s.x;s.magnitude=Math.sqrt(s.x*s.x+s.y*s.y);s.dx=s.x/s.magnitude;s.dy=s.y/s.magnitude;dp1=o.vx*s.dx+o.vy*s.dy;p1.vx=dp1*s.dx;p1.vy=dp1*s.dy;dp2=o.vx*(s.lx/s.magnitude)+o.vy*(s.ly/s.magnitude);p2.vx=dp2*(s.lx/s.magnitude);p2.vy=dp2*(s.ly/s.magnitude);p2.vx*=-1;p2.vy*=-1;bounce.x=p1.vx+p2.vx;bounce.y=p1.vy+p2.vy;o.vx=bounce.x/mass;o.vy=bounce.y/mass}},{key:"contain",value:function contain(sprite,container){var bounce=arguments.length<=2||arguments[2]===undefined?!1:arguments[2];var extra=arguments.length<=3||arguments[3]===undefined?undefined:arguments[3];if(!sprite._bumpPropertiesAdded)this.addCollisionProperties(sprite);if(container.xAnchorOffset===undefined)container.xAnchorOffset=0;if(container.yAnchorOffset===undefined)container.yAnchorOffset=0;if(sprite.parent.gx===undefined)sprite.parent.gx=0;if(sprite.parent.gy===undefined)sprite.parent.gy=0;var collision=new Set();if(sprite.x-sprite.xAnchorOffset<container.x-sprite.parent.gx-container.xAnchorOffset){if(bounce)sprite.vx*=-1;if(sprite.mass)sprite.vx/=sprite.mass;sprite.x=container.x-sprite.parent.gx-container.xAnchorOffset+sprite.xAnchorOffset;collision.add("left")}
+    if(sprite.y-sprite.yAnchorOffset<container.y-sprite.parent.gy-container.yAnchorOffset){if(bounce)sprite.vy*=-1;if(sprite.mass)sprite.vy/=sprite.mass;sprite.y=container.y-sprite.parent.gy-container.yAnchorOffset+sprite.yAnchorOffset;collision.add("top")}
+    if(sprite.x-sprite.xAnchorOffset+sprite.width>container.width-container.xAnchorOffset){if(bounce)sprite.vx*=-1;if(sprite.mass)sprite.vx/=sprite.mass;sprite.x=container.width-sprite.width-container.xAnchorOffset+sprite.xAnchorOffset;collision.add("right")}
+    if(sprite.y-sprite.yAnchorOffset+sprite.height>container.height-container.yAnchorOffset){if(bounce)sprite.vy*=-1;if(sprite.mass)sprite.vy/=sprite.mass;sprite.y=container.height-sprite.height-container.yAnchorOffset+sprite.yAnchorOffset;collision.add("bottom")}
+    if(collision.size===0)collision=undefined;if(collision&&extra)extra(collision);return collision}},{key:"outsideBounds",value:function outsideBounds(s,bounds,extra){var x=bounds.x,y=bounds.y,width=bounds.width,height=bounds.height;var collision=new Set();if(s.x<x-s.width){collision.add("left")}
+    if(s.y<y-s.height){collision.add("top")}
+    if(s.x>width+s.width){collision.add("right")}
+    if(s.y>height+s.height){collision.add("bottom")}
+    if(collision.size===0)collision=undefined;if(collision&&extra)extra(collision);return collision}},{key:"_getCenter",value:function _getCenter(o,dimension,axis){if(o.anchor!==undefined){if(o.anchor[axis]!==0){return 0}else{return dimension/2}}else{return dimension}}},{key:"hit",value:function hit(a,b){var react=arguments.length<=2||arguments[2]===undefined?!1:arguments[2];var bounce=arguments.length<=3||arguments[3]===undefined?!1:arguments[3];var global=arguments[4];var extra=arguments.length<=5||arguments[5]===undefined?undefined:arguments[5];var hitTestPoint=this.hitTestPoint.bind(this),hitTestRectangle=this.hitTestRectangle.bind(this),hitTestCircle=this.hitTestCircle.bind(this),movingCircleCollision=this.movingCircleCollision.bind(this),circleCollision=this.circleCollision.bind(this),hitTestCircleRectangle=this.hitTestCircleRectangle.bind(this),rectangleCollision=this.rectangleCollision.bind(this),circleRectangleCollision=this.circleRectangleCollision.bind(this);var collision=undefined,aIsASprite=a.parent!==undefined,bIsASprite=b.parent!==undefined;if(aIsASprite&&b instanceof Array||bIsASprite&&a instanceof Array){spriteVsArray()}else{collision=findCollisionType(a,b);if(collision&&extra)extra(collision)}
+    return collision;function findCollisionType(a,b){var aIsASprite=a.parent!==undefined;var bIsASprite=b.parent!==undefined;if(aIsASprite&&bIsASprite){if(a.diameter&&b.diameter){return circleVsCircle(a,b)}else if(a.diameter&&!b.diameter){return circleVsRectangle(a,b)}else{return rectangleVsRectangle(a,b)}}
+    else if(bIsASprite&&!(a.x===undefined)&&!(a.y===undefined)){return hitTestPoint(a,b)}else{throw new Error("I'm sorry, "+a+" and "+b+" cannot be use together in a collision test.'")}}
+    function spriteVsArray(){if(a instanceof Array){var _ref=[_b,_a];var _a=_ref[0];var _b=_ref[1]}
+    for(var i=b.length-1;i>=0;i--){var sprite=b[i];collision=findCollisionType(a,sprite);if(collision&&extra)extra(collision,sprite)}}
+    function circleVsCircle(a,b){if(!react){return hitTestCircle(a,b)}
+    else{if(a.vx+a.vy!==0&&b.vx+b.vy!==0){return movingCircleCollision(a,b,global)}else{return circleCollision(a,b,bounce,global)}}}
+    function rectangleVsRectangle(a,b){if(!react){return hitTestRectangle(a,b,global)}else{return rectangleCollision(a,b,bounce,global)}}
+    function circleVsRectangle(a,b){if(!react){return hitTestCircleRectangle(a,b,global)}else{return circleRectangleCollision(a,b,bounce,global)}}}}]);return Bump})()
+  </script>
+  
+  <!-- Tink.js -->
+  <script>
+    "use strict";var _createClass=(function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||!1;descriptor.configurable=!0;if("value" in descriptor)descriptor.writable=!0;Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor}})();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function")}}
+    var Tink=(function(){function Tink(PIXI,element){var scale=arguments.length<=2||arguments[2]===undefined?1:arguments[2];_classCallCheck(this,Tink);this.element=element;this._scale=scale;this.draggableSprites=[];this.pointers=[];this.buttons=[];this.PIXI=PIXI;this.TextureCache=this.PIXI.utils.TextureCache;this.AnimatedSprite=this.PIXI.extras.MovieClip;this.Texture=this.PIXI.Texture}
+    _createClass(Tink,[{key:"makeDraggable",value:function makeDraggable(){var _this=this;for(var _len=arguments.length,sprites=Array(_len),_key=0;_key<_len;_key++){sprites[_key]=arguments[_key]}
+    if(!(sprites[0]instanceof Array)){sprites.forEach(function(sprite){_this.draggableSprites.push(sprite);if(sprite.draggable===undefined){sprite.draggable=!0;sprite._localDraggableAllocation=!0}})}
+    else{var spritesArray=sprites[0];if(spritesArray.length>0){for(var i=spritesArray.length-1;i>=0;i--){var sprite=spritesArray[i];this.draggableSprites.push(sprite);if(sprite.draggable===undefined){sprite.draggable=!0;sprite._localDraggableAllocation=!0}}}}}},{key:"makeUndraggable",value:function makeUndraggable(){var _this2=this;for(var _len2=arguments.length,sprites=Array(_len2),_key2=0;_key2<_len2;_key2++){sprites[_key2]=arguments[_key2]}
+    if(!(sprites[0]instanceof Array)){sprites.forEach(function(sprite){_this2.draggableSprites.splice(_this2.draggableSprites.indexOf(sprite),1);if(sprite._localDraggableAllocation===!0)sprite.draggable=!1})}
+    else{var spritesArray=sprites[0];if(spritesArray.length>0){for(var i=spritesArray.length-1;i>=0;i--){var sprite=spritesArray[i];this.draggableSprites.splice(this.draggableSprites.indexOf(sprite),1);if(sprite._localDraggableAllocation===!0)sprite.draggable=!1}}}}},{key:"makePointer",value:function makePointer(){var element=arguments.length<=0||arguments[0]===undefined?this.element:arguments[0];var scale=arguments.length<=1||arguments[1]===undefined?this.scale:arguments[1];var draggableSprites=this.draggableSprites;var addGlobalPositionProperties=this.addGlobalPositionProperties;var pointer={element:element,_scale:scale,_x:0,_y:0,width:1,height:1,get x(){return this._x/this.scale},get y(){return this._y/this.scale},get centerX(){return this.x},get centerY(){return this.y},get position(){return{x:this.x,y:this.y}},get scale(){return this._scale},set scale(value){this._scale=value},get cursor(){return this.element.style.cursor},set cursor(value){this.element.style.cursor=value},isDown:!1,isUp:!0,tapped:!1,downTime:0,elapsedTime:0,press:undefined,release:undefined,tap:undefined,dragSprite:null,dragOffsetX:0,dragOffsetY:0,_visible:!0,get visible(){return this._visible},set visible(value){if(value===!0){this.cursor="auto"}else{this.cursor="none"}
+    this._visible=value},moveHandler:function moveHandler(event){var element=event.target;this._x=event.pageX-element.offsetLeft;this._y=event.pageY-element.offsetTop;event.preventDefault()},touchmoveHandler:function touchmoveHandler(event){var element=event.target;this._x=event.targetTouches[0].pageX-element.offsetLeft;this._y=event.targetTouches[0].pageY-element.offsetTop;event.preventDefault()},downHandler:function downHandler(event){this.isDown=!0;this.isUp=!1;this.tapped=!1;this.downTime=Date.now();if(this.press)this.press();event.preventDefault()},touchstartHandler:function touchstartHandler(event){var element=event.target;this._x=event.targetTouches[0].pageX-element.offsetLeft;this._y=event.targetTouches[0].pageY-element.offsetTop;this.isDown=!0;this.isUp=!1;this.tapped=!1;this.downTime=Date.now();if(this.press)this.press();event.preventDefault()},upHandler:function upHandler(event){this.elapsedTime=Math.abs(this.downTime-Date.now());if(this.elapsedTime<=200&&this.tapped===!1){this.tapped=!0;if(this.tap)this.tap()}
+    this.isUp=!0;this.isDown=!1;if(this.release)this.release()},touchendHandler:function touchendHandler(event){this.elapsedTime=Math.abs(this.downTime-Date.now());if(this.elapsedTime<=200&&this.tapped===!1){this.tapped=!0;if(this.tap)this.tap()}
+    this.isUp=!0;this.isDown=!1;if(this.release)this.release()},hitTestSprite:function hitTestSprite(sprite){addGlobalPositionProperties(sprite);var hit=!1;var xAnchorOffset=undefined,yAnchorOffset=undefined;if(sprite.anchor!==undefined){xAnchorOffset=sprite.width*sprite.anchor.x;yAnchorOffset=sprite.height*sprite.anchor.y}else{xAnchorOffset=0;yAnchorOffset=0}
+    if(!sprite.circular){var left=sprite.gx-xAnchorOffset,right=sprite.gx+sprite.width-xAnchorOffset,top=sprite.gy-yAnchorOffset,bottom=sprite.gy+sprite.height-yAnchorOffset;hit=this.x>left&&this.x<right&&this.y>top&&this.y<bottom}
+    else{var vx=this.x-(sprite.gx+sprite.width/2-xAnchorOffset),vy=this.y-(sprite.gy+sprite.width/2-yAnchorOffset),distance=Math.sqrt(vx*vx+vy*vy);hit=distance<sprite.width/2}
+    return hit}};element.addEventListener("mousemove",pointer.moveHandler.bind(pointer),!1);element.addEventListener("mousedown",pointer.downHandler.bind(pointer),!1);window.addEventListener("mouseup",pointer.upHandler.bind(pointer),!1);element.addEventListener("touchmove",pointer.touchmoveHandler.bind(pointer),!1);element.addEventListener("touchstart",pointer.touchstartHandler.bind(pointer),!1);window.addEventListener("touchend",pointer.touchendHandler.bind(pointer),!1);element.style.touchAction="none";this.pointers.push(pointer);return pointer}},{key:"addGlobalPositionProperties",value:function addGlobalPositionProperties(sprite){if(sprite.gx===undefined){Object.defineProperty(sprite,"gx",{get:function get(){return sprite.getGlobalPosition().x}})}
+    if(sprite.gy===undefined){Object.defineProperty(sprite,"gy",{get:function get(){return sprite.getGlobalPosition().y}})}}},{key:"updateDragAndDrop",value:function updateDragAndDrop(draggableSprites){if(this.pointers.length===0){this.makePointer(this.element,this.scale)}
+    this.pointers.forEach(function(pointer){if(pointer.isDown){if(pointer.dragSprite===null){for(var i=draggableSprites.length-1;i>-1;i--){var sprite=draggableSprites[i];if(pointer.hitTestSprite(sprite)&&sprite.draggable){pointer.dragOffsetX=pointer.x-sprite.gx;pointer.dragOffsetY=pointer.y-sprite.gy;pointer.dragSprite=sprite;var children=sprite.parent.children;children.splice(children.indexOf(sprite),1);children.push(sprite);draggableSprites.splice(draggableSprites.indexOf(sprite),1);draggableSprites.push(sprite);break}}}
+    else{pointer.dragSprite.x=pointer.x-pointer.dragOffsetX;pointer.dragSprite.y=pointer.y-pointer.dragOffsetY}}
+    if(pointer.isUp){pointer.dragSprite=null}
+    draggableSprites.some(function(sprite){if(pointer.hitTestSprite(sprite)&&sprite.draggable){if(pointer.visible)pointer.cursor="pointer";return!0}else{if(pointer.visible)pointer.cursor="auto";return!1}})})}},{key:"makeInteractive",value:function makeInteractive(o){o.press=o.press||undefined;o.release=o.release||undefined;o.over=o.over||undefined;o.out=o.out||undefined;o.tap=o.tap||undefined;o.state="up";o.action="";o.pressed=!1;o.hoverOver=!1;o.tinkType="";o.enabled=!0;this.buttons.push(o)}},{key:"updateButtons",value:function updateButtons(){var _this3=this;if(this.pointers.length===0){this.makePointer(this.element,this.scale)}
+    this.pointers.forEach(function(pointer){pointer.shouldBeHand=!1;_this3.buttons.forEach(function(o){if(o.enabled){var hit=pointer.hitTestSprite(o);if(pointer.isUp){o.state="up";if(o.tinkType==="button")o.gotoAndStop(0)}
+    if(hit){o.state="over";if(o.totalFrames&&o.totalFrames===3&&o.tinkType==="button"){o.gotoAndStop(1)}
+    if(pointer.isDown){o.state="down";if(o.tinkType==="button"){if(o.totalFrames===3){o.gotoAndStop(2)}else{o.gotoAndStop(1)}}}
+    pointer.shouldBeHand=!0;if(pointer.visible)pointer.cursor="pointer"}else{if(pointer.visible)pointer.cursor="auto"}
+    if(o.state==="down"){if(!o.pressed){if(o.press)o.press();o.pressed=!0;o.action="pressed"}}
+    if(o.state==="over"){if(o.pressed){if(o.release)o.release();o.pressed=!1;o.action="released";if(pointer.tapped&&o.tap)o.tap()}
+    if(!o.hoverOver){if(o.over)o.over();o.hoverOver=!0}}
+    if(o.state==="up"){if(o.pressed){if(o.release)o.release();o.pressed=!1;o.action="released"}
+    if(o.hoverOver){if(o.out)o.out();o.hoverOver=!1}}}});if(pointer.shouldBeHand){pointer.cursor="pointer"}else{pointer.cursor="auto"}})}},{key:"button",value:function button(source){var x=arguments.length<=1||arguments[1]===undefined?0:arguments[1];var y=arguments.length<=2||arguments[2]===undefined?0:arguments[2];var o=undefined;if(typeof source[0]==="string"){if(this.TextureCache[source[0]]){o=this.AnimatedSprite.fromFrames(source)}else{o=this.AnimatedSprite.fromImages(source)}}
+    else if(source[0]instanceof this.Texture){o=new this.AnimatedSprite(source)}
+    this.makeInteractive(o);o.tinkType="button";o.x=x;o.y=y;return o}},{key:"update",value:function update(){if(this.draggableSprites.length!==0)this.updateDragAndDrop(this.draggableSprites);if(this.buttons.length!==0)this.updateButtons()}},{key:"keyboard",value:function keyboard(keyCode){var key={};key.code=keyCode;key.isDown=!1;key.isUp=!0;key.press=undefined;key.release=undefined;key.downHandler=function(event){if(event.keyCode===key.code){if(key.isUp&&key.press)key.press();key.isDown=!0;key.isUp=!1}
+    event.preventDefault()};key.upHandler=function(event){if(event.keyCode===key.code){if(key.isDown&&key.release)key.release();key.isDown=!1;key.isUp=!0}
+    event.preventDefault()};window.addEventListener("keydown",key.downHandler.bind(key),!1);window.addEventListener("keyup",key.upHandler.bind(key),!1);return key}},{key:"arrowControl",value:function arrowControl(sprite,speed){if(speed===undefined){throw new Error("Please supply the arrowControl method with the speed at which you want the sprite to move")}
+    var upArrow=this.keyboard(38),rightArrow=this.keyboard(39),downArrow=this.keyboard(40),leftArrow=this.keyboard(37);leftArrow.press=function(){sprite.vx=-speed;sprite.vy=0};leftArrow.release=function(){if(!rightArrow.isDown&&sprite.vy===0){sprite.vx=0}};upArrow.press=function(){sprite.vy=-speed;sprite.vx=0};upArrow.release=function(){if(!downArrow.isDown&&sprite.vx===0){sprite.vy=0}};rightArrow.press=function(){sprite.vx=speed;sprite.vy=0};rightArrow.release=function(){if(!leftArrow.isDown&&sprite.vy===0){sprite.vx=0}};downArrow.press=function(){sprite.vy=speed;sprite.vx=0};downArrow.release=function(){if(!upArrow.isDown&&sprite.vx===0){sprite.vy=0}}}},{key:"scale",get:function get(){return this._scale},set:function set(value){this._scale=value;this.pointers.forEach(function(pointer){return pointer.scale=value})}}]);return Tink})()
+  </script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Press+Start+2P');
+/*     @font-face {
+      font-family: "PressStart2P";
+      src: url("https://fonts.googleapis.com/css?family=Press+Start+2P");
+    } */
+    * {
+      margin: 0px;
+      padding: 0px;
+    }
+  </style>
+  
+  <script>
+    Images = {
+      PLAYER: "images/player.png",
+      ENEMY_0: "images/enemy_alien.png",
+      BULLET: "images/bullet.png",
+      HEALTH_HEART: "images/healthheart.png",
+      RAPID_POWERUP: "images/rapidfirepowerup.png",
+      SLOWMO_POWERUP: "images/slowmopowerup.png",
+      RESTART_BUTTON: "images/restartbutton.png",
+      LASER_WARNING: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAECAYAAABP2FU6AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gYIBwAErDbYLAAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAFUlEQVQI12P4////fyYGOPj///9/AE/iB/skZmfOAAAAAElFTkSuQmCC",
+      ROCKET: "images/rocket.png",
+      EXPLOSION_0: "images/explosion0.png",
+      EXPLOSION_1: "images/explosion1.png",
+      EXPLOSION_2: "images/explosion2.png",
+      EXPLOSION_3: "images/explosion3.png",
+      SMOKE_PIECE: "images/smokepiece.png",
+    }
+  </script>
+
+</head>
+<body>
+  <!--  Full game  -->
+  <script type="text/javascript">
+    //Aliases
+    let Application = PIXI.Application,
+        Container = PIXI.Container,
+				ParticleContainer = PIXI.particles.ParticleContainer,
+        loader = PIXI.loader,
+        resources = PIXI.loader.resources,
+        TextureCache = PIXI.utils.TextureCache,
+        Sprite = PIXI.Sprite,
+        Rectangle = PIXI.Rectangle,
+        Text = PIXI.Text,
+        TextStyle = PIXI.TextStyle;
+
+    const app = new Application({
+      width: 480,
+      height: 800
+    });
+    PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
+    
+    // Variables
+    var bump = new Bump(PIXI);
+    var tink; //new Tink(PIXI, app.renderer.view);
+    var mousePos = app.renderer.plugins.interaction.mouse.global;
+    var player;
+    var bullets = [];
+    var enemies = [];
+    var lasers = [];
+    var updatable = [];
+    var healthBar = new Container();
+		var entities = new Container();
+    var particles = new Container();
+    var gui = new Container();
+    var RIGHT_WALL_POSITION = app.renderer.width;
+    var LEFT_WALL_POSITION = 0;
+    var spriteScales = 3;
+    var score = 0;
+    var scoreText;
+    var gameOver = false;
+    var gameLoopID = undefined;
+    var state = play;
+    var highScore = 0;
+    var laserCreationCooldown = 50;//(Math.random() * 1000) + 100;
+    var powerUpCreationCooldown = 80;
+    var slowMoMaximumCooldown = 400;
+    var slowMoCooldown = slowMoMaximumCooldown;
+    var slowMo = false;
+    
+  	// Creates canvas element, pushes to DOM
+    document.body.appendChild(app.view);
+    
+    // Load all sprites
+    loader
+        .add([Images.PLAYER, Images.ENEMY_0, Images.BULLET,
+              Images.HEALTH_HEART, Images.RAPID_POWERUP, Images.RESTART_BUTTON,
+             	Images.LASER_WARNING, Images.ROCKET, Images.EXPLOSION_0,
+              Images.EXPLOSION_1, Images.EXPLOSION_2, Images.EXPLOSION_3,
+             	Images.SMOKE_PIECE, Images.SLOWMO_POWERUP])
+    		.on("progress", loadProgressHandler)
+        .load(loadFinished);
+    
+    function loadFinished() {
+      init();
+      gameLoop();
+    }
+    
+    // Called on load completion
+    function init() {
+      gameOver = false;
+      console.log('Game Started');
+      tink = new Tink(PIXI, app.renderer.view);
+      tink.makePointer();
+      // Add containers to stage
+      entities = new Container();
+      gui = new Container();
+      app.stage.addChild(entities);
+      app.stage.addChild(gui);
+      app.stage.addChild(particles);
+      
+      // Clear enemies and bu
+      enemies = [];
+      bullets = [];
+      lasers = [];
+      updatable = [];
+      
+    	// Create player
+      createPlayer();
+      
+      // Create enemy
+      for (i = 0; i < 3; i++) {
+        createEnemy();
+      }
+      
+      // Create healthbar
+      createHealthBar();
+      
+      // Create Score
+      createScoreText();
+      
+      
+      // Start Gameloop
+      // app.ticker.add(delta => gameLoop(delta));
+      
+      state = play;
+      // gameLoopID = requestAnimationFrame(gameLoop); // request the next frame
+			
+    }
+    
+    function gameLoop() {
+      delta = app.ticker.deltaTime;
+      tink.update();
+      // Get mouse pos
+      mousePos = app.renderer.plugins.interaction.mouse.global;
+      
+      // Call next animation frame
+			requestAnimationFrame(gameLoop);
+      
+      state(delta);
+    }
+    
+    function play(delta) {
+			player.update(delta);
+      // Update all bullets
+      for (var i in bullets) {
+        bullets[i].update();
+      }
+      for (var i in enemies) {
+        enemies[i].update();
+      }
+      for (var i in lasers) {
+        lasers[i].update();
+			}
+      for (var i in updatable) {
+        updatable[i].update();
+      }
+      // Update score text
+      scoreText.text = "Score: " + score;
+      // Laser creation
+      if (laserCreationCooldown > 0) {
+        laserCreationCooldown --;
+      } else {
+        newLaser();
+      }
+      if (powerUpCreationCooldown > 0)  {
+        powerUpCreationCooldown --;
+      } else {
+        createPowerUp();
+      }
+      
+      // Slowmo
+      if (slowMo && slowMoCooldown > 0) {
+        slowMoCooldown --;
+      } else if (slowMo) {
+        slowMo = false;
+        slowMoCooldown = slowMoMaximumCooldown;
+      }
+      
+      // Shake reset X
+      // if (entities.position.x > 0.1 || entities.position.x < -0.1) {
+        entities.position.x += (0 - entities.position.x) / 10;
+      // } else {
+        // entities.position.set(0, entities.position.y);
+      // }
+      // Shake reset Y
+      // if (entities.position.y > 0.1 || entities.position.y < -0.1) {
+        entities.position.y += (0 - entities.position.y) / 10;
+			// } else {
+        // entities.position.set(entities.position.x, 0);
+      // }
+    }
+    
+    function dead() {
+      
+    }
+    
+    function createPlayer() {
+      // Create PIXI.Sprite from Image
+      player = new Sprite(resources[Images.PLAYER].texture);
+      player.anchor.x = 0.5;
+      player.anchor.y = 0.5;
+      player.x = app.renderer.width / 2;
+      player.targetY = app.renderer.height - (app.renderer.height * 0.1);
+      player.y = app.renderer.height - (app.renderer.height * 0.1);
+      player.maximumShootCooldown = 10;
+      player.shootCooldown = player.maximumShootCooldown;
+      player.recoilAmount = -(app.renderer.height * 0.01);
+      player.smoothness = 5;
+      player.rapidFire;
+      player.maxmimumRapidFireCooldown = 300;
+      player.rapidFireCooldown = player.maximumRapidFireCooldown;
+      player.rapidFireSpeed = 1;
+      resizeSprite(player, player.width * spriteScales);
+      
+      // Player update
+      player.update = function(delta) {
+        // Move towards mouse
+        // Calculate xSpeed with distance from mouse position
+        let xSpeed = (mousePos.x - this.x) / player.smoothness;
+        
+        // Bounce xSpeed on walls
+        if (this.x > LEFT_WALL_POSITION && this.x < RIGHT_WALL_POSITION) {
+          if (this.x + (this.width / 2) + xSpeed > RIGHT_WALL_POSITION) {
+            // xSpeed = 0;//-xSpeed;
+            xSpeed = (RIGHT_WALL_POSITION - (this.x + (this.width / 2)));
+          } else if (this.x - (this.width / 2) + xSpeed < LEFT_WALL_POSITION) {
+            xSpeed = (LEFT_WALL_POSITION - (this.x - (this.width / 2)));
+          }
+        }
+        
+        // Rotate player
+        player.rotation = (xSpeed / 50);
+        
+        // Add xSpeed to position
+        this.x += xSpeed;
+        
+        // Infinite shoot
+        if (!gameOver) {
+          if (this.shootCooldown > 0) {
+            this.shootCooldown -= delta * this.rapidFireSpeed;
+          } else {
+            this.shootCooldown = this.maximumShootCooldown;
+            this.shoot();
+          }
+        }
+        
+        // Rapid fire cooldown
+        if (this.rapidFire && this.rapidFireCooldown > 0) {
+          this.rapidFireCooldown--;
+          if (this.rapidFireSpeed < 5) {
+            this.rapidFireSpeed += 0.05;
+          }
+        } else {// if (this.rapidFire) {
+          this.rapidFire = false;
+          if (this.rapidFireSpeed > 1) {
+            this.rapidFireSpeed -= 0.05;
+          }
+          // this.rapidFireSpeed = 1;
+        }
+        
+        // Move towards target Y
+        this.y += (this.targetY - this.y) / 5;
+      }
+    	player.shoot = function() {
+        // Add bullet sprite
+        let bullet = new Sprite(resources[Images.BULLET].texture);
+        // Resize bullet
+        resizeSprite(bullet, bullet.width * spriteScales);
+        // Bullet positioning
+        bullet.anchor.x = 0.5;
+        bullet.anchor.y = 0.5;
+        bullet.position.set(this.x, this.y); 
+        bullet.speed = -10;
+      	// Update
+        bullet.update = function() {
+          // Make bullet move
+          this.y += this.speed;
+          // Remove bullet when off screen
+          if (this.y + (this.height / 2) < 0) {
+            this.remove();
+          }
+        }
+        // Removal
+        bullet.remove = function() {
+          // Remove from screen
+          entities.removeChild(this);
+          // Remove from bullets array
+          bullets.splice($.inArray(this, bullets), 1);
+        }
+        
+        // Add to arrays
+        bullets.push(bullet);
+        entities.addChild(bullet);
+        
+        // Add kickback to player
+        this.y += this.recoilAmount;
+      }
+      // Add player to entities container
+      entities.addChild(player);
+    }
+    
+    function createEnemy() {
+      let enemy = new Sprite(resources[Images.ENEMY_0].texture);
+      enemy.anchor.x = 0.5;
+      enemy.anchor.y = 0.5;
+      resizeSprite(enemy, enemy.width * spriteScales);
+    	let newX = (Math.random() * app.renderer.width);
+      enemy.position.set(newX, 0 - enemy.height);
+      enemy.speed = 5;
+      
+      enemy.die = function() {
+        this.remove();
+        score++;;
+        addExplosion(this.x, this.y);
+      }
+      
+      enemy.remove = function() {
+        entities.removeChild(this);
+        enemies.splice($.inArray(this, enemies), 1);
+      };
+        
+      enemy.update = function() {
+     		// Move enemies
+    		this.y += slowMo ? this.speed / 2 : this.speed;
+        
+        for (var i in bullets) {
+          let b = bullets[i];
+          if (bump.hit(this, b, true, false, false)) {
+            this.die();
+            createEnemy();
+          }
+        }
+       
+        
+        // Remove from screen
+        if (this.y - (this.height / 2) > app.renderer.height) {
+          this.remove();
+          die();
+        
+        }
+      };
+      
+      // Add to screen
+      entities.addChild(enemy);
+      enemies.push(enemy);
+    }
+    
+    function createHealthBar() {
+      // Add 3 health pieces to healthBar
+      healthBar.pieces = [];
+      let healthPiece = new Sprite(resources[Images.HEALTH_HEART].texture);
+      let spacing = 4;
+      resizeSprite(healthPiece, healthPiece.width * spriteScales);
+      healthPiece.x = 0;
+      healthPiece.y = 0;
+
+      healthBar.addChild(healthPiece);
+      // Position healthBar
+      healthBar.x = 10;
+      healthBar.y = 10;
+      // Add healthbar to GUI
+      gui.addChild(healthBar);
+    }
+    
+    function loadProgressHandler(loader, resource) {
+      //Display the percentage of files currently loaded
+      console.log("Progress: " + loader.progress + "%"); 
+    }
+    
+    function createScoreText() {
+      let style = new TextStyle({
+        fill: "white",
+        font: "24px Press Start 2P"
+      });
+      scoreText = new Text("SCORE: " + score, style);
+      scoreText.anchor.x = 1;
+      scoreText.y = 10;
+      scoreText.x = (app.renderer.width - 10);
+      gui.addChild(scoreText);
+    }
+  
+    function newLaser() {
+			let newLaser = new Sprite(resources[Images.LASER_WARNING].texture);
+  	  let newX = (Math.random() * app.renderer.width);
+      newLaser.anchor.y = .5;
+      newLaser.position.set(newX, app.renderer.height - (app.renderer.height * 0.1));
+      newLaser.maximumFlashCooldown = 10;
+      newLaser.flashCooldown = newLaser.maximumFlashCooldown;
+      newLaser.targetAlpha = 1;
+      newLaser.alpha = 0.5;
+      newLaser.alphaFadeSmoothness = 3;
+      newLaser.laserShootCooldown = 50;
+      newLaser.shot = false;
+      
+      newLaser.shoot = function() {
+        this.alpha = 0;
+        this.targetAlpha = 0;
+        this.shot = true;
+        
+        let rocket = new Sprite(resources[Images.ROCKET].texture);
+        rocket.anchor.x = 0.5;
+        rocket.x = this.x;
+        rocket.y = -rocket.height;
+        rocket.speed = 20;
+
+        rocket.update = function() {
+          this.y += this.speed;
+          
+ 					if (bump.hit(this, player, false)) {
+           	die();
+            addExplosion(player.x, player.y);
+            entities.removeChild(player);
+          }
+          
+          this.addSmokePiece();
+        }
+        rocket.addSmokePiece = function() {
+        	let smokePiece = new Sprite(resources[Images.SMOKE_PIECE].texture);
+          smokePiece.anchor.set(0.5, 0.5);
+          smokePiece.position.set(this.x, this.y);
+        	smokePiece.speed = 1;
+          smokePiece.rotation = Math.random() * 2;
+          smokePiece.update = function() {
+            // Movement
+						this.y += slowMo ? this.speed / 5 : this.speed;
+            
+            // Scaling
+            this.width += 0.5;
+            this.height += 0.5;
+            
+            // Fade out
+            if(this.alpha > 0) {
+              this.alpha -= 0.05;
+            } else {
+              particles.removeChild(this); 
+            	updatable.splice($.inArray(this, updatable), 1);
+            }
+          }
+          
+          particles.addChild(smokePiece);
+          updatable.push(smokePiece);
+        }
+        
+        resizeSprite(rocket, rocket.width * spriteScales);
+				entities.addChild(rocket);
+        lasers.push(rocket);
+      }
+      
+      newLaser.update = function() {
+        // Flashing
+        if (!this.shot) {
+          if (this.flashCooldown > 0) {
+            this.flashCooldown--;
+          } else {
+            this.flashCooldown = this.maximumFlashCooldown
+            this.targetAlpha = this.targetAlpha === 1 ? 0 : 1;
+          }
+        }
+        
+        // Ease alpha
+        this.alpha += (this.targetAlpha - this.alpha) / this.alphaFadeSmoothness;
+        
+        // Laser shooting
+        if (this.laserShootCooldown > 0) {
+          this.laserShootCooldown--;
+        } else if (!this.shot) {
+          this.shoot();
+        }
+      }
+      
+      
+      resizeSprite(newLaser, newLaser.width * 8);
+      laserCreationCooldown = (Math.random() * 1000) + 500;
+      lasers.push(newLaser);
+			gui.addChild(newLaser);
+    }
+// RAPID_POWERUP
+// SLOWMO_POWERUP
+ 		function createPowerUp() {
+      powerUpCreationCooldown = (Math.random() * 1000) + 50;
+      let slowmo = Math.random() > 0.5;
+      let powerUp = new Sprite(resources[slowmo ? Images.SLOWMO_POWERUP : Images.RAPID_POWERUP].texture);
+      powerUp.anchor.x = 0.5;
+      powerUp.anchor.y = 0.5;
+  		let newX = (Math.random() * app.renderer.width);
+      powerUp.position.set(newX, -powerUp.height);
+      powerUp.speed = 3;
+      powerUp.rotation = Math.random() * 2;
+      resizeSprite(powerUp, powerUp.width * spriteScales);
+      powerUp.update = function() {
+          this.y += this.speed;
+          this.rotation += 0.01;
+          // Collision
+          if (bump.hit(this, player, false)) {
+            if (slowmo) {
+              slowMo = true;
+            } else {
+              player.rapidFire = true;
+              player.rapidFireCooldown = player.maxmimumRapidFireCooldown;
+            }
+            entities.removeChild(powerUp);
+          }
+      }
+      
+      entities.addChild(powerUp);
+      updatable.push(powerUp);
+    }
+    
+    function die() {
+      if (!gameOver) {
+        let style = new TextStyle({
+          fill: "white",
+          font: "24px Press Start 2P"
+        });
+        let message = new Text("GAME OVER", style);
+        message.anchor.x = 0.5;
+        message.anchor.y = 0.5;
+        message.position.set(app.renderer.width / 2, app.renderer.height / 2);
+        gameOver = true;
+        gui.addChild(message);
+       	// High score
+        if (score > highScore) {highScore = score};
+        let highScoreText = new Text('HIGHSCORE: ' + highScore, style);
+        highScoreText.anchor.x = 0.5;
+        highScoreText.anchor.y = 1;
+        highScoreText.x = app.renderer.width / 2;
+        highScoreText.y = message.y - message.height;
+        gui.addChild(highScoreText);
+        // Remove
+        entities.removeChild(player);
+        
+        // Replay button
+        let playButtonFrames = [
+          resources[Images.RESTART_BUTTON].texture,
+          resources[Images.RESTART_BUTTON].texture,
+          resources[Images.RESTART_BUTTON].texture,
+        ];
+        let playButton = tink.button(playButtonFrames);
+        playButton.anchor.x = 0.5;
+        playButton.anchor.y = 0.5;
+        playButton.x = app.renderer.width / 2;
+        playButton.y = message.y + message.height + (playButton.width / 2) + 10;
+        playButton.tap = restart;
+        resizeSprite(playButton, playButton.width * spriteScales);
+        gui.addChild(playButton);
+      }
+    }
+    
+    function addExplosion(x, y) {
+      let explosionTextures = [
+        resources[Images.EXPLOSION_0].texture,
+        resources[Images.EXPLOSION_1].texture,
+        resources[Images.EXPLOSION_2].texture,
+        resources[Images.EXPLOSION_3].texture
+      ];
+      // create an explosion AnimatedSprite
+      let explosion = new PIXI.extras.AnimatedSprite(explosionTextures);
+      explosion.anchor.set(0.5);
+      explosion.x = x;
+      explosion.y = y;
+      explosion.loop = false;
+      explosion.animationSpeed = 0.30;
+      explosion.rotation = Math.random() * 2;
+			resizeSprite(explosion, explosion.width * spriteScales)
+    	particles.addChild(explosion);
+
+      explosion.play();
+
+      explosion.onComplete = () => {
+          explosion.destroy();
+      };
+      
+      shakeScreen();
+    }
+
+    function restart() {
+      for (i = app.stage.children.length - 1; i >= 0; i--) {
+        app.stage.removeChild(app.stage.children[i]);
+      };
+      for (i = entities.children.length - 1; i >= 0; i--) {
+        entities.removeChild(entities.children[i]);
+      };
+      for (i = gui.children.length - 1; i >= 0; i--) {
+        gui.removeChild(gui.children[i]);
+      };
+      
+      score = 0;
+      state = dead;
+      init();
+    }
+    
+    function shakeScreen() {
+      let shakeX = Math.random() * 10;
+      let shakeY = Math.random() * 10;
+      let negative = (Math.random() - 0.5) > 0;
+      shakeX *= negative ? 1 : -1;
+      negative = (Math.random() - 0.5) > 0;
+      shakeY *= negative ? 1 : -1;
+      
+      entities.position.set(entities.x + shakeX, entities.y + shakeY);
+    }
+    
+    function resizeSprite(sprite, width) {
+      let newScale = width / sprite.width;
+      sprite.width = width;
+      sprite.height = sprite.height * newScale;
+    }
+  </script>
+  
+</body>
+</html>
